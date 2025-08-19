@@ -14,7 +14,6 @@
             "title": "Articles to Scrape",
             "type": "array",
             "description": "List of articles to scrape",
-            "editor": "json",
             "items": {
                 "type": "object",
                 "title": "Article",
