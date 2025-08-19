@@ -18,10 +18,13 @@ for (const article of articles) {
     try {
         console.log(`Scraping: ${article.link}`);
         
+        // Use Firecrawl v2 API with proper options
         const response = await axios.post(
-            'https://api.firecrawl.dev/v1/scrape',
+            'https://api.firecrawl.dev/v2/scrape',
             {
                 url: article.link,
+                onlyMainContent: true,
+                maxAge: 172800000,  // 48 hours cache
                 formats: ['markdown', 'html']
             },
             {
@@ -32,10 +35,13 @@ for (const article of articles) {
             }
         );
         
+        // v2 API response structure
+        const scrapedData = response.data.data || response.data;
+        
         results.push({
             ...article,
-            markdown: response.data.data?.markdown || '',
-            html: response.data.data?.html || '',
+            markdown: scrapedData.markdown || '',
+            html: scrapedData.html || '',
             scrapedAt: new Date().toISOString()
         });
         
