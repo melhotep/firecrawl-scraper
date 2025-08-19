@@ -17,20 +17,25 @@
             "editor": "json",
             "items": {
                 "type": "object",
+                "title": "Article",
                 "properties": {
                     "title": {
+                        "title": "Title",
                         "type": "string",
                         "description": "Article title"
                     },
                     "link": {
+                        "title": "Link",
                         "type": "string",
                         "description": "Article URL"
                     },
                     "pubDate": {
+                        "title": "Publication Date",
                         "type": "string",
                         "description": "Publication date"
                     },
                     "guid": {
+                        "title": "GUID",
                         "type": "string",
                         "description": "Unique identifier"
                     }
