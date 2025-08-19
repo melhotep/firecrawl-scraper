@@ -1,15 +1,42 @@
 {
-    "title": "Scrape data from a web page",
+    "title": "Firecrawl Scraper Input",
     "type": "object",
     "schemaVersion": 1,
     "properties": {
-        "url": {
-            "title": "URL of the page",
+        "firecrawlApiKey": {
+            "title": "Firecrawl API Key",
             "type": "string",
-            "description": "The URL of website you want to get the data from.",
+            "description": "Your Firecrawl API key (get one at https://www.firecrawl.dev)",
             "editor": "textfield",
-            "prefill": "https://www.apify.com/"
+            "isSecret": true
+        },
+        "articles": {
+            "title": "Articles to Scrape",
+            "type": "array",
+            "description": "List of articles to scrape",
+            "editor": "json",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "description": "Article title"
+                    },
+                    "link": {
+                        "type": "string",
+                        "description": "Article URL"
+                    },
+                    "pubDate": {
+                        "type": "string",
+                        "description": "Publication date"
+                    },
+                    "guid": {
+                        "type": "string",
+                        "description": "Unique identifier"
+                    }
+                }
+            }
         }
     },
-    "required": ["url"]
+    "required": ["firecrawlApiKey", "articles"]
 }
