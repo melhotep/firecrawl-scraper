@@ -3,64 +3,58 @@ import axios from 'axios';
 
 await Actor.init();
 
+// Function to decode Google News URL by following the redirect
+async function decodeGoogleNewsUrl(googleUrl) {
+    try {
+        console.log(`Decoding: ${googleUrl}`);
+        
+        // Follow the redirect to get the actual URL
+        const response = await axios.get(googleUrl, {
+            maxRedirects: 5,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+        });
+        
+        // The final URL after all redirects
+        const actualUrl = response.request.res.responseUrl || response.config.url;
+        
+        console.log(`Decoded to: ${actualUrl}`);
+        return actualUrl;
+    } catch (error) {
+        console.error(`Failed to decode: ${error.message}`);
+        return googleUrl; // Return original if decoding fails
+    }
+}
+
 const input = await Actor.getInput();
-const { articlesJson, firecrawlApiKey } = input;
+const { articlesJson } = input;
 
 // Parse the JSON string
 const articles = JSON.parse(articlesJson);
 
-console.log(`Processing ${articles.length} articles...`);
+console.log(`Decoding ${articles.length} Google News URLs...`);
 
 const results = [];
-const errors = [];
 
 for (const article of articles) {
-    try {
-        console.log(`Scraping: ${article.link}`);
-        
-        // Use Firecrawl v2 API with proper options
-        const response = await axios.post(
-            'https://api.firecrawl.dev/v2/scrape',
-            {
-                url: article.link,
-                onlyMainContent: true,
-                maxAge: 172800000,  // 48 hours cache
-                formats: ['markdown', 'html']
-            },
-            {
-                headers: {
-                    'Authorization': `Bearer ${firecrawlApiKey}`,
-                    'Content-Type': 'application/json'
-                }
-            }
-        );
-        
-        // v2 API response structure
-        const scrapedData = response.data.data || response.data;
-        
-        results.push({
-            ...article,
-            markdown: scrapedData.markdown || '',
-            html: scrapedData.html || '',
-            scrapedAt: new Date().toISOString()
-        });
-        
-        console.log(`✓ Successfully scraped: ${article.title}`);
-    } catch (error) {
-        console.error(`✗ Failed to scrape ${article.link}:`, error.message);
-        errors.push({
-            article,
-            error: error.message
-        });
+    let actualUrl = article.link;
+    
+    // Check if it's a Google News URL
+    if (article.link.includes('news.google.com/rss/articles/')) {
+        actualUrl = await decodeGoogleNewsUrl(article.link);
     }
+    
+    results.push({
+        ...article,
+        originalLink: article.link,
+        actualLink: actualUrl,
+        decodedAt: new Date().toISOString()
+    });
 }
 
 await Actor.pushData(results);
 
-if (errors.length > 0) {
-    await Actor.setValue('errors', errors);
-}
-
-console.log(`Done! Scraped ${results.length} articles, ${errors.length} errors`);
+console.log(`Done! Decoded ${results.length} URLs`);
 
 await Actor.exit();

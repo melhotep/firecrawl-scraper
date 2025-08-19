@@ -1,22 +1,15 @@
 {
-    "title": "Firecrawl Scraper Input",
+    "title": "Google News URL Decoder Input",
     "type": "object",
     "schemaVersion": 1,
     "properties": {
-        "firecrawlApiKey": {
-            "title": "Firecrawl API Key",
-            "type": "string",
-            "description": "Your Firecrawl API key",
-            "editor": "textfield",
-            "isSecret": true
-        },
         "articlesJson": {
             "title": "Articles JSON",
             "type": "string",
-            "description": "JSON array of articles to scrape",
+            "description": "JSON array of articles with Google News URLs to decode",
             "editor": "textarea",
-            "default": "[{\"title\":\"Test\",\"link\":\"https://example.com\",\"pubDate\":\"2025-08-19\",\"guid\":\"test-001\"}]"
+            "default": "[{\"title\":\"Test\",\"link\":\"https://news.google.com/rss/articles/...\",\"pubDate\":\"2025-08-19\",\"guid\":\"test-001\"}]"
         }
     },
-    "required": ["firecrawlApiKey", "articlesJson"]
+    "required": ["articlesJson"]
 }
